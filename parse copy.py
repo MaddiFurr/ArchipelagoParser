@@ -45,9 +45,9 @@ def sphere_count(pts): #Get the total number of spheres
 
 def player_spheres(p,spherelns,pts):
     line_count = 0
-    ourline = []
+    lines = []
     spheres = []
-    highestln = 0
+    highestline = 0
     cursphere = 1
     with open(sys.argv[1], 'r') as f:
         for ln in f:
@@ -55,29 +55,29 @@ def player_spheres(p,spherelns,pts):
             search = ln.split(":")
             
             if p in search[0] and line_count > spherelns[0] and line_count > pts:
-                ourline.append(line_count)
-                highestln = line_count
-                #print("Search 0: " + str(search[0]) + " | LINE: " + str(line_count))
-    
+                lines.append(line_count)
+                highestline = line_count
+            
     f.close()
-    highestsphere = 0
-
+    s = 0
+    print(lines)
+    allspheres = []
+    highestsphere = s
     print(spherelns)
-    i = 0
-    n = 0
     chk = True
     while chk:
-        if i >= len(spherelns) -1:
-            highestsphere = len(spherelns) -1
+        if highestline > spherelns[s]:
+            s += 1
+            
+            if s == len(spherelns):
+                highestsphere = len(spherelns)
+                chk = False
+        else:
+            highestsphere = s
             chk = False
-            break   
-        if highestln < spherelns[i]:
-            highestsphere = i
-            chk = False
-            break
-        i += 1
-
-
+    lines.clear()
+    print(p + " Highest Sphere: " + str(highestsphere))
+    
     return highestsphere
                 
 def find_the_fucking_playthrough():
@@ -88,7 +88,29 @@ def find_the_fucking_playthrough():
             if 'Playthrough:' in ln:
                 return line_count
     
+def prune():
+    line_count = 0
+    lowline = 0
+    highline = 0
+    lines = []
+    clr = []
+    with open(sys.argv[1], 'r') as f:
+        lines = f.readlines()
+        for ln in lines:
+            line_count += 1
+            if 'Entrances' in ln:
+                lowline = line_count
+            if 'Playthrough' in ln:
+                highline = line_count - 1
 
+        input("Open the file and delete between lines: " + str(lowline) + " & " + str(highline))
+        quit()
+        
+try:
+    if  sys.argv[2] == "prune":
+        prune()
+except:
+    pass
 
 pts = find_the_fucking_playthrough()
 lncnt, spherelines = sphere_count(pts)
@@ -99,7 +121,6 @@ if os.path.isfile(".lines"):
 
 i = 0
 for i in range(len(players)):
-    
     sphere = player_spheres(players[i],spherelines,pts)
     temp = open(".lines", "a")
     temp.write(players[i] + "||" + str(sphere) + "\n")
