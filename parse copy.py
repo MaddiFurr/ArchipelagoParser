@@ -5,6 +5,8 @@ import time
 import os
 
 print("Welcome to Archipeago Spoiler Parser\nParsing File: " + sys.argv[1])
+time.sleep(3)
+
 
 dictionary = {}
 players = []
@@ -43,48 +45,39 @@ def sphere_count(pts): #Get the total number of spheres
 
 def player_spheres(p,spherelns,pts):
     line_count = 0
-    ourline = []
+    lines = []
     spheres = []
-    highestln = 0
+    highestline = 0
     cursphere = 1
     with open(sys.argv[1], 'r') as f:
         for ln in f:
             line_count += 1
-            search = ln.split("):")
+            search = ln.split(":")
             
             if p in search[0] and line_count > spherelns[0] and line_count > pts:
-                ourline.append(line_count)
-                highestln = line_count
-                #print("Search 0: " + str(search[0]) + " | LINE: " + str(line_count))
-    
+                lines.append(line_count)
+                highestline = line_count
+            
     f.close()
-    highestsphere = 0
-    
-
-    i = 0
-    n = 0
+    s = 0
+    print(lines)
+    allspheres = []
+    highestsphere = s
+    print(spherelns)
     chk = True
     while chk:
-        if i >= len(spherelns) -1:
-            highestsphere = len(spherelns)
+        if highestline > spherelns[s]:
+            s += 1
+            
+            if s == len(spherelns):
+                highestsphere = len(spherelns)
+                chk = False
+        else:
+            highestsphere = s
             chk = False
-            break   
-        if highestln > spherelns[i] and i == len(spherelns) -1:
-            i -= 1
-            highestsphere = len(spherelns) -1
-            chk = False
-            break
-        if highestln < spherelns[i]:
-            i -= 1
-            highestsphere = i
-            chk = False
-
-        i += 1
-    if highestsphere >= len(spherelns) - 1:
-        if highestln > spherelns[i]:
-            highestsphere = len(spherelns) - 1
-        elif highestln < spherelns[i]:
-            highestsphere = len(spherelns) - 2
+    lines.clear()
+    print(p + " Highest Sphere: " + str(highestsphere))
+    
     return highestsphere
                 
 def find_the_fucking_playthrough():
@@ -99,44 +92,29 @@ def prune():
     line_count = 0
     lowline = 0
     highline = 0
-    urab = 0
-    paths = 0
     lines = []
     clr = []
     with open(sys.argv[1], 'r') as f:
         lines = f.readlines()
         for ln in lines:
-            
             if 'Entrances' in ln:
                 lowline = line_count
             if 'Playthrough' in ln:
                 highline = line_count - 1
             if 'Unreachable Items' in ln:
-                urab = line_count
+                urab = line_count - 1
             if 'Paths' in ln:
-                paths = line_count
+                paths = line_count -1
             line_count += 1
-        if lowline > 0:
-            print("Open the file and delete between lines: " + str(lowline) + " & " + str(highline))
-        if urab > 0:
-            print("You will need to delete everything after line: " + str(urab))
-        if urab == 0 and paths > 0:
-            print("You will need to delete everything after line: " + str(paths))
-        else:
-            print("Holy shit, you're smart enough to have followed instructions. No golden star though. Go fuck off and parse now.")
-        print("If you don't do this, the parse will fail. Have fun.... or don't.")
-        input('')
+
+        input("Open the file and delete between lines: " + str(lowline) + " & " + str(highline), "\nYou will also need to delete everything after line: ", str(urab), " or: ", str(paths))
         quit()
-
-
-selection = input("would you like to perform a check to ensure your file is ready for parsing?")
-if selection.lower().startswith("y"):
-    prune()
-elif selection.lower().startswith("n"):
+        
+try:
+    if  sys.argv[2] == "prune":
+        prune()
+except:
     pass
-else:
-    input()
-    quit()
 
 pts = find_the_fucking_playthrough()
 lncnt, spherelines = sphere_count(pts)
@@ -147,12 +125,11 @@ if os.path.isfile(".lines"):
 
 i = 0
 for i in range(len(players)):
-    if players[i] != "Spectator":
-        sphere = player_spheres(players[i],spherelines,pts)
-        temp = open(".lines", "a")
-        temp.write(players[i] + "||" + str(sphere) + "\n")
-        temp.close()
-        i += 1
+    sphere = player_spheres(players[i],spherelines,pts)
+    temp = open(".lines", "a")
+    temp.write(players[i] + "||" + str(sphere) + "\n")
+    temp.close()
+    i += 1
 
 
 ufinish = []
