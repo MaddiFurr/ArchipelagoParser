@@ -1,0 +1,13 @@
+for i in range(len(lines)):
+        if lines[l] > spherelines[s]:
+            highestsphere = s
+            
+            break
+        checking = True
+        while checking:
+            if lines[l] < spherelines[s]:
+                s -= 1
+            else:
+                l -= 1
+                checking = False
+    print(p + " Highest Sphere: " + str(highestsphere))
