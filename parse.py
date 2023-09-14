@@ -52,7 +52,7 @@ def player_spheres(p,spherelns,pts):
     with open(sys.argv[1], 'r') as f:
         for ln in f:
             line_count += 1
-            search = ln.split(":")
+            search = ln.split("):")
             
             if p in search[0] and line_count > spherelns[0] and line_count > pts:
                 ourline.append(line_count)
@@ -61,23 +61,32 @@ def player_spheres(p,spherelns,pts):
     
     f.close()
     highestsphere = 0
+    
 
-    print(spherelns)
     i = 0
     n = 0
     chk = True
     while chk:
         if i >= len(spherelns) -1:
-            highestsphere = len(spherelns) -1
+            highestsphere = len(spherelns)
             chk = False
             break   
-        if highestln < spherelns[i]:
-            highestsphere = i
+        if highestln > spherelns[i] and i == len(spherelns) -1:
+            i -= 1
+            highestsphere = len(spherelns) -1
             chk = False
             break
+        if highestln < spherelns[i]:
+            i -= 1
+            highestsphere = i
+            chk = False
+
         i += 1
-
-
+    if highestsphere >= len(spherelns) - 1:
+        if highestln > spherelns[i]:
+            highestsphere = len(spherelns) - 1
+        elif highestln < spherelns[i]:
+            highestsphere = len(spherelns) - 2
     return highestsphere
                 
 def find_the_fucking_playthrough():
@@ -99,12 +108,12 @@ if os.path.isfile(".lines"):
 
 i = 0
 for i in range(len(players)):
-    
-    sphere = player_spheres(players[i],spherelines,pts)
-    temp = open(".lines", "a")
-    temp.write(players[i] + "||" + str(sphere) + "\n")
-    temp.close()
-    i += 1
+    if players[i] != "Spectator":
+        sphere = player_spheres(players[i],spherelines,pts)
+        temp = open(".lines", "a")
+        temp.write(players[i] + "||" + str(sphere) + "\n")
+        temp.close()
+        i += 1
 
 
 ufinish = []
